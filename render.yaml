@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: certchain-backend
+    env: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@institute.edu
+      - key: ADMIN_PASSWORD
+        value: admin123
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: CONTRACT_ADDRESS
+        value: 0xba0553a92F82F62E62d38496398637f9CB11B37C
+      - key: RPC_URL
+        value: https://ethereum-sepolia-rpc.publicnode.com
+      - key: NETWORK
+        value: sepolia
+      - key: RELAYER_PRIVATE_KEY
+        value: 483ea0095c8df6fd81f5031b85323096efda2316c61d0082ffddff2d3d3c8869

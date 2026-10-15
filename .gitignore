@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment Variables & Keys
+.env
+.env.local
+server/.env
+frontend/.env
+contracts/.env
+
+# Build outputs
+dist/
+frontend/dist/
+cache/
+artifacts/
+out/
+
+# Database & Uploaded Data
+server/data/certchain.db*
+server/data/pdfs/*.pdf
+!server/data/pdfs/CERT-2026-0001.pdf
+
+# Logs & System
+*.log
+.DS_Store
+Thumbs.db

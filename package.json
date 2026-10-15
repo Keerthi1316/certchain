@@ -1,0 +1,13 @@
+{
+  "name": "certchain",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "CertChain — Decentralized Blockchain Certificate Verification on Ethereum Sepolia",
+  "scripts": {
+    "start": "node start.js",
+    "dev": "node start.js",
+    "seed": "cd frontend && node seed-sample.js",
+    "deploy-contract": "cd frontend && node deploy.js"
+  }
+}
