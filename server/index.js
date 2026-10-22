@@ -241,6 +241,8 @@ app.get('/api/certificates/:id/pdf', (req, res) => {
   const r = db.prepare('SELECT has_pdf FROM certificates WHERE cert_id=?').get(req.params.id);
   if (!r?.has_pdf) return res.status(404).json({ error: 'No PDF stored' });
   res.type('application/pdf').sendFile(path.join(DATA, 'pdfs', `${req.params.id}.pdf`));
+});
+
 // Static serving for unified production deployment (Render / Single VPS)
 const distPath = path.resolve('../frontend/dist');
 if (fs.existsSync(distPath)) {
