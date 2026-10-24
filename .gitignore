@@ -23,5 +23,6 @@ server/data/pdfs/*.pdf
 
 # Logs & System
 *.log
+.netlify/
 .DS_Store
 Thumbs.db
