@@ -52,7 +52,8 @@ export default function Issue() {
     }
     setBusy(true);
     try {
-      const { certId } = await api.nextId();
+      const idRes = await api.nextId();
+      const certId = idRes?.certId || idRes?.nextId || `CERT-2026-${String(Date.now()).slice(-4)}`;
       const issued = fmtDate(Date.now());
       const issuerDisplay = method === 'wallet' && wallet.addr ? short(wallet.addr) : '0xe23ce9…ceF1 (Inst. Authority)';
       const bytes = await makeCertificatePdf({

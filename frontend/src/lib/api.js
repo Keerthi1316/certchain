@@ -104,7 +104,8 @@ async function call(path, opts = {}, auth = false) {
 
     if (path === '/next-id') {
       const count = getLocalCerts().length + 1;
-      return { nextId: `CERT-2026-${String(count).padStart(4, '0')}` };
+      const id = `CERT-2026-${String(count).padStart(4, '0')}`;
+      return { certId: id, nextId: id };
     }
 
     if (path === '/issuer/relay-issue' && opts.method === 'POST') {

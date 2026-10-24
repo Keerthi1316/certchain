@@ -13,8 +13,15 @@ export async function sha256Hex(bytes) {
 /** Builds the certificate PDF. The bytes returned are exactly what gets hashed and stored. */
 export async function makeCertificatePdf({ certId, name, course, achievement, issued, issuer }) {
   const W = 842, H = 595;
+  const safeCertId = String(certId || 'CERT-2026-0001');
+  const safeName = String(name || 'Recipient');
+  const safeCourse = String(course || 'Blockchain Technology');
+  const safeAchievement = String(achievement || 'Certificate of Completion');
+  const safeIssued = String(issued || new Date().toISOString().slice(0, 10));
+  const safeIssuer = String(issuer || '0xe23ce9…ceF1 (Inst. Authority)');
+
   const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
-  doc.setProperties({ title: `${certId} — ${name}`, creator: 'CERTCHAIN' });
+  doc.setProperties({ title: `${safeCertId} — ${safeName}`, creator: 'CERTCHAIN' });
   doc.setFillColor(8, 9, 26); doc.rect(0, 0, W, H, 'F');
   doc.setFillColor(40, 30, 90); doc.circle(W, 0, 220, 'F');
   doc.setFillColor(8, 9, 26); doc.circle(W, 0, 200, 'F');
@@ -28,26 +35,31 @@ export async function makeCertificatePdf({ certId, name, course, achievement, is
 
   doc.setTextColor(154, 160, 200); doc.setFontSize(10);
   doc.text('CERTIFICATE OF', W / 2, 150, { align: 'center', charSpace: 4 });
-  const achSize = achievement.length > 25 ? 24 : achievement.length > 15 ? 30 : 36;
+  const achSize = safeAchievement.length > 25 ? 24 : safeAchievement.length > 15 ? 30 : 36;
   doc.setTextColor(185, 180, 255); doc.setFontSize(achSize);
-  doc.text(achievement.toUpperCase(), W / 2, 195, { align: 'center', maxWidth: W - 160 });
+  doc.text(safeAchievement.toUpperCase(), W / 2, 195, { align: 'center', maxWidth: W - 160 });
   doc.setTextColor(154, 160, 200); doc.setFontSize(10);
   doc.text('PROUDLY PRESENTED TO', W / 2, 252, { align: 'center', charSpace: 4 });
   doc.setTextColor(238, 240, 255); doc.setFontSize(34);
-  doc.text(name, W / 2, 302, { align: 'center', maxWidth: W - 160 });
+  doc.text(safeName, W / 2, 302, { align: 'center', maxWidth: W - 160 });
   doc.setFont('helvetica', 'normal'); doc.setTextColor(154, 160, 200); doc.setFontSize(14);
   doc.text('for successfully completing', W / 2, 340, { align: 'center' });
   doc.setFont('helvetica', 'bold'); doc.setTextColor(238, 240, 255); doc.setFontSize(18);
-  doc.text(course, W / 2, 368, { align: 'center', maxWidth: W - 160 });
+  doc.text(safeCourse, W / 2, 368, { align: 'center', maxWidth: W - 160 });
 
   const row = (label, val, x, mono) => {
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(154, 160, 200); doc.text(label, x, 470, { charSpace: 2 });
+    const textVal = String(val ?? '');
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(154, 160, 200); doc.text(String(label), x, 470, { charSpace: 2 });
     doc.setFont(mono ? 'courier' : 'helvetica', 'bold'); doc.setFontSize(11);
-    mono ? doc.setTextColor(51, 214, 255) : doc.setTextColor(238, 240, 255); doc.text(val, x, 488);
+    mono ? doc.setTextColor(51, 214, 255) : doc.setTextColor(238, 240, 255);
+    doc.text(textVal, x, 488);
   };
-  row('ISSUED', issued, 66); row('CERTIFICATE ID', certId, 220, true); row('ISSUER', issuer, 390, true);
-  doc.addImage(await qrDataUrl(verifyUrl(certId)), 'PNG', W - 160, H - 170, 90, 90);
+  row('ISSUED', safeIssued, 66);
+  row('CERTIFICATE ID', safeCertId, 220, true);
+  row('ISSUER', safeIssuer, 390, true);
+  doc.addImage(await qrDataUrl(verifyUrl(safeCertId)), 'PNG', W - 160, H - 170, 90, 90);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(154, 160, 200);
   doc.text('SCAN TO VERIFY', W - 115, H - 68, { align: 'center', charSpace: 2 });
   return new Uint8Array(doc.output('arraybuffer'));
 }
+
