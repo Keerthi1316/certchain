@@ -22,7 +22,7 @@ const ABI = [
 async function seed() {
   console.log('Generating seed certificate PDF...');
   const certId = 'CERT-2026-0001';
-  const name = 'Keerthi Varma';
+  const name = 'Keerthi Katuri';
   const course = 'Blockchain Technology';
   const achievement = 'Excellence in Smart Contract Verification';
   const issued = 'October 14, 2026';

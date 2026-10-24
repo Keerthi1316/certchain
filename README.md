@@ -8,7 +8,7 @@ CertChain is a decentralized academic credential platform that issues certificat
 
 - **Smart Contract Address**: [`0xba0553a92F82F62E62d38496398637f9CB11B37C`](https://sepolia.etherscan.io/address/0xba0553a92F82F62E62d38496398637f9CB11B37C)
 - **Network**: Ethereum Sepolia Testnet (Chain ID: `11155111`)
-- **Sample Verified Certificate**: `CERT-2026-0001` (Keerthi Varma — Excellence in Smart Contract Verification)
+- **Sample Verified Certificate**: `CERT-2026-0001` (Keerthi Katuri — Excellence in Smart Contract Verification)
 - **Seed Issuance Tx**: [`0x243790c4e526836ef380d4f41bfec44ded681699a882061fc538be5587ce7f78`](https://sepolia.etherscan.io/tx/0x243790c4e526836ef380d4f41bfec44ded681699a882061fc538be5587ce7f78)
 
 ---

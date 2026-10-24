@@ -26,3 +26,4 @@ server/data/pdfs/*.pdf
 .netlify/
 .DS_Store
 Thumbs.db
+~$*

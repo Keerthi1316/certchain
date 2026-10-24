@@ -17,7 +17,7 @@ const COURSES = [
 ];
 
 const PRESETS = [
-  { name: 'Keerthi Varma', email: 'keerthi@gcet.edu', course: 'Blockchain Technology', achievement: 'Excellence in Smart Contracts' },
+  { name: 'Keerthi Katuri', email: 'keerthi@gcet.edu', course: 'Blockchain Technology', achievement: 'Excellence in Smart Contracts' },
   { name: 'Sarah Connor', email: 'sarah.c@institute.edu', course: 'Applied Cryptography', achievement: 'Advanced Cryptographic Protocols' },
   { name: 'David Chen', email: 'david.chen@tech.org', course: 'Distributed Systems', achievement: 'Mastery in Consensus Algorithms' }
 ];
@@ -225,7 +225,7 @@ export default function Issue() {
             <div className="grid g2">
               <label className="field">
                 <span>Recipient Name *</span>
-                <input className="input" value={f.name} onChange={set('name')} placeholder="e.g. Keerthi Varma" maxLength={100} required />
+                <input className="input" value={f.name} onChange={set('name')} placeholder="e.g. Keerthi Katuri" maxLength={100} required />
               </label>
               <label className="field">
                 <span>Recipient Email *</span>

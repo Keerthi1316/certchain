@@ -63,7 +63,7 @@ export default function Landing() {
             <article className="cert hero-qr">
               <small>CERTCHAIN • Institute of Technology</small>
               <h3>Certificate of<br />Excellence</h3>
-              <div className="who">Keerthi Varma</div>
+              <div className="who">Keerthi Katuri</div>
               <small>Blockchain Technology</small>
               <div className="row">
                 <div>
