@@ -15,10 +15,10 @@ export default function Certificates() {
 
   const load = () => {
     api.list()
-      .then(setRows)
+      .then((data) => setRows(Array.isArray(data) ? data : []))
       .catch((e) => {
-        if (e.status === 401) setToken(null);
-        else toast('✕ ' + e.message);
+        if (e?.status === 401) setToken(null);
+        else toast('✕ ' + (e?.message || 'Failed to load registry'));
         setRows([]);
       });
   };
@@ -29,23 +29,24 @@ export default function Certificates() {
   }, []);
 
   const revoke = async (c) => {
-    if (!window.confirm(`Are you sure you want to revoke ${c.certId}? This action is irreversibly recorded on Ethereum Sepolia.`)) {
+    const certId = c?.certId || c?.cert_id;
+    if (!window.confirm(`Are you sure you want to revoke ${certId}? This action is irreversibly recorded on Ethereum Sepolia.`)) {
       return;
     }
 
-    setRevokingId(c.certId);
+    setRevokingId(certId);
     toast('Revoking on-chain… please wait');
 
     try {
       if (wallet.addr && rightNetwork) {
         // Use connected wallet
-        const { txHash } = await revokeOnChain(c.certId);
-        await api.revoke(c.certId, { txHash, revokedBy: wallet.addr });
+        const { txHash } = await revokeOnChain(certId);
+        await api.revoke(certId, { txHash, revokedBy: wallet.addr });
       } else {
         // Use institutional authority relayer
-        await api.relayRevoke(c.certId);
+        await api.relayRevoke(certId);
       }
-      toast(`✓ Certificate ${c.certId} successfully revoked on-chain`);
+      toast(`✓ Certificate ${certId} successfully revoked on-chain`);
       load();
     } catch (e) {
       toast('✕ ' + friendlyError(e));
@@ -54,9 +55,14 @@ export default function Certificates() {
     }
   };
 
-  const list = (rows || []).filter((c) =>
-    [c.certId, c.recipientName, c.course].join(' ').toLowerCase().includes(q.toLowerCase())
-  );
+  const safeRows = Array.isArray(rows) ? rows : [];
+  const list = safeRows.filter((c) => {
+    if (!c) return false;
+    const certId = c.certId || c.cert_id || '';
+    const name = c.recipientName || c.recipient_name || '';
+    const course = c.course || '';
+    return [certId, name, course].join(' ').toLowerCase().includes((q || '').toLowerCase());
+  });
 
   return (
     <>

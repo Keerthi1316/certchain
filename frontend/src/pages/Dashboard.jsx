@@ -14,8 +14,14 @@ export default function Dashboard() {
   const [authorizing, setAuthorizing] = useState(false);
 
   const loadData = () => {
-    api.stats().then(setS).catch((e) => { if (e.status === 401) setToken(null); });
-    api.list().then((l) => setRecent(l.slice(0, 6))).catch(() => {});
+    api.stats().then(res => {
+      if (res && typeof res.total === 'number') setS(res);
+    }).catch((e) => { if (e?.status === 401) setToken(null); });
+
+    api.list().then((l) => {
+      const arr = Array.isArray(l) ? l : [];
+      setRecent(arr.slice(0, 6));
+    }).catch(() => setRecent([]));
   };
 
   useEffect(() => {
@@ -122,25 +128,29 @@ export default function Dashboard() {
           <span>Status</span>
           <span>Action</span>
         </div>
-        {recent.length ? (
-          recent.map((c) => (
-            <div key={c.certId} className="tr" style={{ gridTemplateColumns: '1.2fr 1fr 1.3fr .9fr 1fr' }}>
-              <b>{c.certId}</b>
-              <span>{c.recipientName}</span>
-              <span>{c.course}</span>
-              <StatusPill status={c.status} />
-              <div className="wrap" style={{ gap: 6, flexWrap: 'nowrap' }}>
-                <Link className="btn ghost sm" style={{ padding: '0 10px', fontSize: '.72rem' }} to={`/verify/${c.certId}`}>
-                  Verify
-                </Link>
-                {c.hasPdf && (
-                  <a className="btn ghost sm" style={{ padding: '0 10px', fontSize: '.72rem' }} href={api.pdfUrl(c.certId)} target="_blank" rel="noreferrer">
-                    PDF 📄
-                  </a>
-                )}
+        {Array.isArray(recent) && recent.length ? (
+          recent.map((c) => {
+            const certId = c?.certId || c?.cert_id || 'CERT-2026-0001';
+            const name = c?.recipientName || c?.recipient_name || '—';
+            return (
+              <div key={certId} className="tr" style={{ gridTemplateColumns: '1.2fr 1fr 1.3fr .9fr 1fr' }}>
+                <b>{certId}</b>
+                <span>{name}</span>
+                <span>{c?.course || '—'}</span>
+                <StatusPill status={c?.status || 'valid'} />
+                <div className="wrap" style={{ gap: 6, flexWrap: 'nowrap' }}>
+                  <Link className="btn ghost sm" style={{ padding: '0 10px', fontSize: '.72rem' }} to={`/verify/${certId}`}>
+                    Verify
+                  </Link>
+                  {c?.hasPdf && (
+                    <a className="btn ghost sm" style={{ padding: '0 10px', fontSize: '.72rem' }} href={api.pdfUrl(certId)} target="_blank" rel="noreferrer">
+                      PDF 📄
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="empty">
             <div className="rt" style={{ fontSize: '1.3rem' }}>No certificates yet</div>

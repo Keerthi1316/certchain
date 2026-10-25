@@ -38,7 +38,7 @@ export default function Verify() {
   const fileRef = useRef();
 
   useEffect(() => {
-    api.samples().then((s) => setSamples(s || [])).catch(() => {});
+    api.samples().then((s) => setSamples(Array.isArray(s) ? s : [])).catch(() => setSamples([]));
   }, []);
 
   const handleFile = async (f) => {
@@ -144,11 +144,14 @@ export default function Verify() {
             <button className="btn ghost sm" style={{ fontSize: '.75rem', padding: '0 12px' }} onClick={() => selectSample('CERT-2026-0001')}>
               ⚡ CERT-2026-0001 (Live Verified)
             </button>
-            {samples.filter(s => s.certId !== 'CERT-2026-0001').slice(0, 2).map((s) => (
-              <button key={s.certId} className="btn ghost sm" style={{ fontSize: '.75rem', padding: '0 12px' }} onClick={() => selectSample(s.certId)}>
-                ⚡ {s.certId}
-              </button>
-            ))}
+            {(Array.isArray(samples) ? samples : []).filter(s => (s?.certId || s?.cert_id) !== 'CERT-2026-0001').slice(0, 2).map((s) => {
+              const sId = s?.certId || s?.cert_id;
+              return (
+                <button key={sId} className="btn ghost sm" style={{ fontSize: '.75rem', padding: '0 12px' }} onClick={() => selectSample(sId)}>
+                  ⚡ {sId}
+                </button>
+              );
+            })}
             <button
               className="btn ghost sm"
               style={{ fontSize: '.75rem', padding: '0 12px', color: 'var(--cyan)', borderColor: 'rgba(51,214,255,.35)' }}
