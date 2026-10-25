@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { verifyOnChain, ETHERSCAN, short, friendlyError } from '../lib/chain.js';
+import { verifyOnChain, ETHERSCAN, CONTRACT_ADDRESS, short, friendlyError } from '../lib/chain.js';
 import { api } from '../lib/api.js';
-import { sha256Hex } from '../lib/pdf.js';
+import { sha256Hex, downloadCertificatePdf } from '../lib/pdf.js';
 import { fmtDate, Hash } from '../components/ui.jsx';
 import { useApp } from '../state.jsx';
 import QrScannerModal from '../components/QrScannerModal.jsx';
@@ -142,16 +142,17 @@ export default function Verify() {
           <div className="wrap" style={{ justifyContent: 'center', gap: 8 }}>
             <span style={{ fontSize: '.75rem', color: 'var(--muted)', alignSelf: 'center' }}>Test on-chain:</span>
             <button className="btn ghost sm" style={{ fontSize: '.75rem', padding: '0 12px' }} onClick={() => selectSample('CERT-2026-0001')}>
-              ⚡ CERT-2026-0001 (Live Verified)
+              ⚡ CERT-2026-0001 (Valid)
             </button>
-            {(Array.isArray(samples) ? samples : []).filter(s => (s?.certId || s?.cert_id) !== 'CERT-2026-0001').slice(0, 2).map((s) => {
-              const sId = s?.certId || s?.cert_id;
-              return (
-                <button key={sId} className="btn ghost sm" style={{ fontSize: '.75rem', padding: '0 12px' }} onClick={() => selectSample(sId)}>
-                  ⚡ {sId}
-                </button>
-              );
-            })}
+            <button className="btn ghost sm" style={{ fontSize: '.75rem', padding: '0 12px' }} onClick={() => selectSample('CERT-2026-0002')}>
+              ⚡ CERT-2026-0002 (Valid)
+            </button>
+            <button className="btn ghost sm" style={{ fontSize: '.75rem', padding: '0 12px' }} onClick={() => selectSample('CERT-2026-0003')}>
+              ⚡ CERT-2026-0003 (Valid)
+            </button>
+            <button className="btn ghost sm" style={{ fontSize: '.75rem', padding: '0 12px' }} onClick={() => selectSample('CERT-2026-0004')}>
+              ⚡ CERT-2026-0004 (Revoked)
+            </button>
             <button
               className="btn ghost sm"
               style={{ fontSize: '.75rem', padding: '0 12px', color: 'var(--cyan)', borderColor: 'rgba(51,214,255,.35)' }}
@@ -305,13 +306,33 @@ export default function Verify() {
                 </div>
 
                 <div className="wrap" style={{ justifyContent: 'center', marginTop: 24, gap: 10 }}>
-                  {status === 'valid' && res.meta?.hasPdf && (
-                    <a className="btn action" href={api.pdfUrl(res.certId)} target="_blank" rel="noreferrer">
+                  {status === 'valid' && (
+                    <button
+                      className="btn action"
+                      onClick={async () => {
+                        toast('Generating official certificate PDF…');
+                        try {
+                          await downloadCertificatePdf({
+                            certId: res.certId,
+                            ...(res.meta || {}),
+                            issuer: res.chain?.issuer
+                          });
+                          toast(`✓ Downloaded ${res.certId}.pdf`);
+                        } catch (err) {
+                          toast('✕ Failed to download PDF: ' + err.message);
+                        }
+                      }}
+                    >
                       Download Official PDF 📄
-                    </a>
+                    </button>
                   )}
-                  {status === 'valid' && res.meta?.issueTx && (
-                    <a className="btn ghost" href={`${ETHERSCAN}/tx/${res.meta.issueTx}`} target="_blank" rel="noreferrer">
+                  {status === 'valid' && (
+                    <a
+                      className="btn ghost"
+                      href={res.meta?.issueTx ? `${ETHERSCAN}/tx/${res.meta.issueTx}` : `${ETHERSCAN}/address/${CONTRACT_ADDRESS}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       View on Sepolia Etherscan ↗
                     </a>
                   )}

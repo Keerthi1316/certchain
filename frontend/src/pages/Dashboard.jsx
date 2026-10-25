@@ -4,6 +4,7 @@ import { api } from '../lib/api.js';
 import { chainStats, manageIssuer, short, friendlyError, CONTRACT_ADDRESS, ETHERSCAN } from '../lib/chain.js';
 import { useApp } from '../state.jsx';
 import { StatusPill } from '../components/ui.jsx';
+import { downloadCertificatePdf } from '../lib/pdf.js';
 
 export default function Dashboard() {
   const { wallet, rightNetwork, toast, setToken } = useApp();
@@ -142,11 +143,22 @@ export default function Dashboard() {
                   <Link className="btn ghost sm" style={{ padding: '0 10px', fontSize: '.72rem' }} to={`/verify/${certId}`}>
                     Verify
                   </Link>
-                  {c?.hasPdf && (
-                    <a className="btn ghost sm" style={{ padding: '0 10px', fontSize: '.72rem' }} href={api.pdfUrl(certId)} target="_blank" rel="noreferrer">
-                      PDF 📄
-                    </a>
-                  )}
+                  <button
+                    className="btn ghost sm"
+                    style={{ padding: '0 10px', fontSize: '.72rem' }}
+                    onClick={async () => {
+                      toast('Downloading certificate PDF…');
+                      try {
+                        await downloadCertificatePdf(c);
+                        toast(`✓ Downloaded ${certId}.pdf`);
+                      } catch (err) {
+                        toast('✕ Download error: ' + err.message);
+                      }
+                    }}
+                    title="Download Certificate PDF"
+                  >
+                    PDF 📄
+                  </button>
                 </div>
               </div>
             );

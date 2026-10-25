@@ -63,3 +63,47 @@ export async function makeCertificatePdf({ certId, name, course, achievement, is
   return new Uint8Array(doc.output('arraybuffer'));
 }
 
+/** Obtains the PDF bytes either by fetching the stored file or generating on the fly */
+export async function getPdfBlob(cert) {
+  const certId = cert?.certId || cert?.cert_id || 'CERT-2026-0001';
+  try {
+    const res = await fetch(`/api/certificates/${encodeURIComponent(certId)}/pdf`);
+    const cType = res.headers.get('content-type') || '';
+    if (res.ok && cType.includes('application/pdf')) {
+      return await res.blob();
+    }
+  } catch {}
+
+  // Generate client-side vector PDF fallback
+  const bytes = await makeCertificatePdf({
+    certId,
+    name: cert?.recipientName || cert?.recipient_name || 'Keerthi Katuri',
+    course: cert?.course || 'Blockchain Technology',
+    achievement: cert?.achievement || 'Excellence in Smart Contract Verification',
+    issued: cert?.issuedAt || cert?.issued_at || '14 October 2026',
+    issuer: cert?.issuer || '0xe23ce9…ceF1 (Inst. Authority)'
+  });
+  return new Blob([bytes], { type: 'application/pdf' });
+}
+
+export async function downloadCertificatePdf(cert) {
+  const certId = cert?.certId || cert?.cert_id || 'CERT-2026-0001';
+  const blob = await getPdfBlob(cert);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${certId}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 2000);
+}
+
+export async function openCertificatePdf(cert) {
+  const blob = await getPdfBlob(cert);
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+}
+

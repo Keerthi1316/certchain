@@ -3,8 +3,10 @@ const tok = () => localStorage.getItem('cc_token');
 
 const SEED_CERTS = [
   { cert_id: 'CERT-2026-0001', recipient_name: 'Keerthi Katuri', course: 'Blockchain Technology', achievement: 'Excellence in Smart Contract Verification', status: 'valid', issued_at: '2026-10-14T10:00:00.000Z', issue_tx: '0x243790c4e526836ef380d4f41bfec44ded681699a882061fc538be5587ce7f78', has_pdf: 1, issuer: '0xe23ce985284365B92fF6EE0F855a11811274ceF1' },
-  { cert_id: 'CERT-2026-0004', recipient_name: 'Sarah Connor', course: 'Applied Cryptography', achievement: 'Advanced Cryptographic Protocols', status: 'valid', issued_at: '2026-10-14T12:00:00.000Z', issue_tx: '0x243790c4e526836ef380d4f41bfec44ded681699a882061fc538be5587ce7f78', has_pdf: 1, issuer: '0xe23ce985284365B92fF6EE0F855a11811274ceF1' },
-  { cert_id: 'CERT-2026-0005', recipient_name: 'David Chen', course: 'Distributed Systems', achievement: 'Mastery in Consensus Algorithms', status: 'valid', issued_at: '2026-10-14T14:00:00.000Z', issue_tx: '0x243790c4e526836ef380d4f41bfec44ded681699a882061fc538be5587ce7f78', has_pdf: 1, issuer: '0xe23ce985284365B92fF6EE0F855a11811274ceF1' }
+  { cert_id: 'CERT-2026-0002', recipient_name: 'Keerthi Katuri', course: 'Artificial Intelligence & Machine Learning', achievement: 'Excellence in Deep Learning & Neural Models', status: 'valid', issued_at: '2026-10-14T11:00:00.000Z', issue_tx: '0x9aa6dea65b11be386f88050e6557a015a8e0c4db7048b4e982e3ceb188d4ae18', has_pdf: 1, issuer: '0xe23ce985284365B92fF6EE0F855a11811274ceF1' },
+  { cert_id: 'CERT-2026-0003', recipient_name: 'Keerthi Katuri', course: 'Cybersecurity & Cryptography', achievement: 'Mastery in Applied Cryptographic Protocols', status: 'valid', issued_at: '2026-10-14T11:30:00.000Z', issue_tx: '0x31a96cf78f50643eafca802921cf2e4962dbda548bdb989923d646076adfa6c3', has_pdf: 1, issuer: '0xe23ce985284365B92fF6EE0F855a11811274ceF1' },
+  { cert_id: 'CERT-2026-0004', recipient_name: 'Potta Pranitha', course: 'Blockchain Technology', achievement: 'Excellence in Smart Contracts', status: 'revoked', issued_at: '2026-10-15T03:58:00.000Z', issue_tx: '0x8b5477cbf17b99f2672eef1b845172de6414c9548d9d5f577fa0587c63a6c269', has_pdf: 1, issuer: '0xe23ce985284365B92fF6EE0F855a11811274ceF1' },
+  { cert_id: 'CERT-2026-0005', recipient_name: 'Potta Pranitha', course: 'Blockchain Technology', achievement: 'First class with distinction', status: 'valid', issued_at: '2026-10-15T04:04:26.000Z', issue_tx: '0x2ed3a0fbfeac91dbdb6ab8a1122e5c6614a1bc081d8fa133a02e7274e9763b77', has_pdf: 1, issuer: '0xe23ce985284365b92ff6ee0f855a11811274cef1' }
 ];
 
 function normalizeCert(c) {
@@ -40,9 +42,19 @@ function getLocalCerts() {
     const raw = localStorage.getItem('cc_certs');
     const stored = raw ? JSON.parse(raw) : [];
     const arr = Array.isArray(stored) ? stored : [];
-    const ids = new Set(arr.map((c) => c?.certId || c?.cert_id).filter(Boolean));
-    const merged = [...arr, ...SEED_CERTS.filter((c) => !ids.has(c.cert_id))];
-    return merged.map(normalizeCert).filter(Boolean);
+    const map = new Map();
+    // Authoritative on-chain seed certs take priority for known base IDs
+    for (const sc of SEED_CERTS) {
+      map.set(sc.cert_id, sc);
+    }
+    // Additional user-issued certificates
+    for (const c of arr) {
+      const id = c?.certId || c?.cert_id;
+      if (id && !map.has(id)) {
+        map.set(id, c);
+      }
+    }
+    return Array.from(map.values()).map(normalizeCert).filter(Boolean);
   } catch {
     return SEED_CERTS.map(normalizeCert);
   }
