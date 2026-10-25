@@ -27,3 +27,4 @@ server/data/pdfs/*.pdf
 .DS_Store
 Thumbs.db
 ~$*
+~*
