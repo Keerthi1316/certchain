@@ -7,6 +7,39 @@ The smart contract is already deployed and live on **Ethereum Sepolia Testnet** 
 
 ---
 
+## Why did the previous Netlify link show "This site is suspended"?
+The previous deployment was created using Netlify CLI's temporary **anonymous drop mode** (`--allow-anonymous`). 
+Netlify treats anonymous drops as temporary 60-minute to 24-hour trials. If not claimed into a registered Netlify account, Netlify's automated abuse-prevention system suspends or purges the temporary link.
+
+To make the site **100% permanent** so that you can open it anytime, from any phone, laptop, or examiner's computer without needing Antigravity or your computer running, follow the **Permanent Netlify Deployment** below.
+
+---
+
+## Permanent Netlify Deployment (Free & Never Suspended)
+
+Your code is already pushed to GitHub at: **`https://github.com/Keerthi1316/certchain`**
+
+1. Go to [app.netlify.com](https://app.netlify.com) and click **Log in with GitHub**.
+2. In your Netlify dashboard, click **"Add new site"** → **"Import an existing project"**.
+3. Choose **GitHub** as your Git provider and authorize Netlify.
+4. Select your repository: **`Keerthi1316/certchain`**.
+5. Netlify will detect your repository settings. Configure the fields as follows:
+   - **Base directory**: `frontend`
+   - **Build command**: `npm run build`
+   - **Publish directory**: `frontend/dist`
+6. Click **Deploy certchain**.
+7. Within 60 seconds, your site will be permanently live on Netlify's global Edge CDN.
+8. *(Optional)* To get a clean URL:
+   - Go to **Site configuration** → **Change site name**.
+   - Change it to something custom like `certchain-keerthi.netlify.app`.
+
+Because this is connected directly to your GitHub account:
+- It is **100% free** and **will never be suspended**.
+- It runs 24/7/365 independently on Netlify servers (no Antigravity needed).
+- Whenever you push new code to GitHub, Netlify automatically redeploys your site in seconds.
+
+---
+
 ## Step 1: Push Code to GitHub
 
 Your local git repository has already been initialized and committed on the `main` branch.
